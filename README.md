@@ -5,6 +5,10 @@ react-nativ listView   Performance solution   Native implementation   Smooth mem
 
 Performance is better than all current list components.   
 
+
+
+### [中文](http://incode.live/articles/2018/11/21/1542788141721.html) 
+
 ### IOS  Use TabView   implementation 
 
 Be based on  [react-native-tableview](https://github.com/aksonov/react-native-tableview) 
