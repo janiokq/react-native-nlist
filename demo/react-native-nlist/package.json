@@ -1,0 +1,18 @@
+
+{
+  "name": "react-native-nlist",
+  "version": "1.0.0",
+  "description": "",
+  "main": "NativeListview/index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react-native"
+  ],
+  "author": "",
+  "license": "",
+  "peerDependencies": {
+    "react-native": "^0.41.2"
+  }
+}
