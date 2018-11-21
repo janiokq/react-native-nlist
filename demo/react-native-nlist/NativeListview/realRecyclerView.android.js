@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import {
+import ReactNative,{
   requireNativeComponent,
   NativeModules,
   Dimensions,
   View
 } from 'react-native';
 
-const ReactNative = require('ReactNative');
 import RealRecyclerItemView from './realRecyclerItemView.android';
 const NativeRealRecyclerView = requireNativeComponent('RealRecyclerView', RealRecyclerView,{
   nativeOnly: {onChange: true}

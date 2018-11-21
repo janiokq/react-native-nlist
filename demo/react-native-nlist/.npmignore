@@ -1,0 +1,23 @@
+# Docs
+docs
+
+# Build
+android/build
+ios/build
+
+# Tests
+.circleci
+__snapshots__
+*.test.js
+
+# Configs
+.babelrc
+.gitignore
+.npmignore
+prettier.config.js
+yarn.lock
+babel.config.js
+jest.config.js
+
+# IDE
+.idea/

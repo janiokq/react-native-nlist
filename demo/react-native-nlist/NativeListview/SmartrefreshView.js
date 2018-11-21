@@ -1,12 +1,12 @@
-var UIManager = require('UIManager');
+
 import React, { Component } from 'react';
-import {
+import ReactNative,{
   requireNativeComponent,
   NativeModules,
   Dimensions,
-  View
+  View,
+  UIManager
 } from 'react-native';
-const ReactNative = require('ReactNative');
 
 import RecyclerView from './realRecyclerView.android.js';
 const NativeRealRecyclerView = requireNativeComponent('Smartrefresh', RealRecyclerView,{

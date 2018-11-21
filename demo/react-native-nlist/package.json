@@ -8,10 +8,24 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "react-native"
+    "react-native",
+    "react-component",
+    "react-native-nlist",
+    "react",
+    "mobile",
+    "ios",
+    "android",
+    "nlist"
   ],
-  "author": "",
-  "license": "",
+  "author": {
+    "name": "janiokq",
+    "email": "janiokq@qq.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janiokq/react-native-nlist"
+  },
   "peerDependencies": {
     "react-native": "^0.41.2"
   }
