@@ -3,6 +3,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -41,13 +42,54 @@ public class RealRecyclerView extends RecyclerView {
     private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
 
 
+    private boolean mShouldScroll;
+    //记录目标项位置
+    private int mToPosition;
+    private RecyclerView self;
+
+
+    /**
+     * 滑动到指定位置
+     */
+    public void smoothMoveToPosition(RecyclerView mRecyclerView, final int position) {
+        // 第一个可见位置
+        int firstItem = mRecyclerView.getChildLayoutPosition(mRecyclerView.getChildAt(0));
+        // 最后一个可见位置
+        int lastItem = mRecyclerView.getChildLayoutPosition(mRecyclerView.getChildAt(mRecyclerView.getChildCount() - 1));
+        if (position < firstItem) {
+            // 第一种可能:跳转位置在第一个可见位置之前，使用smoothScrollToPosition
+            mRecyclerView.smoothScrollToPosition(position);
+        } else if (position <= lastItem) {
+            // 第二种可能:跳转位置在第一个可见位置之后，最后一个可见项之前
+            int movePosition = position - firstItem;
+            if (movePosition >= 0 && movePosition < mRecyclerView.getChildCount()) {
+                int top = mRecyclerView.getChildAt(movePosition).getTop();
+                // smoothScrollToPosition 不会有效果，此时调用smoothScrollBy来滑动到指定位置
+                mRecyclerView.smoothScrollBy(0, top);
+            }
+        } else {
+            // 第三种可能:跳转位置在最后可见项之后，则先调用smoothScrollToPosition将要跳转的位置滚动到可见位置
+            // 再通过onScrollStateChanged控制再次调用smoothMoveToPosition，执行上一个判断中的方法
+            mRecyclerView.smoothScrollToPosition(position);
+            mToPosition = position;
+            mShouldScroll = true;
+        }
+    }
+
+
     private class MyScrollEvent extends Event<MyScrollEvent> {
-        private final int x;
-        private final int y;
-        private MyScrollEvent(int viewTag, float x,float y) {
+        private  int x;
+        private  int y;
+        private  int nx;
+        private  int ny;
+        private MyScrollEvent(int viewTag, int x,int y,int nx,int ny) {
             super(viewTag);
-            this.x = (int)x;
-            this.y = (int)y;
+
+            this.x = x;
+            this.y = y;
+            this.nx = nx;
+            this.ny = ny;
+
         }
         @Override
         public String getEventName() {
@@ -58,16 +100,20 @@ public class RealRecyclerView extends RecyclerView {
             WritableMap eventData = Arguments.createMap();
             eventData.putInt("x", x);
             eventData.putInt("y", y);
+            eventData.putInt("Nx", nx);
+            eventData.putInt("Ny", ny);
             rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
         }
     }//end class;
 
 
     private  class  ScrollToTopAndFooter extends  Event<ScrollToTopAndFooter>{
-        private  final boolean state; // 状态 代表  true 为 滚动 到 头部  false 为滚动 到 底部
-        private  ScrollToTopAndFooter(int ViewTag,boolean state){
+        private   int fstate;
+        private   int estate;
+        private  ScrollToTopAndFooter(int ViewTag,int state,int etate){
             super(ViewTag);
-            this.state = state;
+            this.fstate = state;
+            this.estate = etate;
         }
         @Override
         public String getEventName() {
@@ -77,16 +123,27 @@ public class RealRecyclerView extends RecyclerView {
         @Override
         public void dispatch(RCTEventEmitter rctEventEmitter) {
             WritableMap eventData = Arguments.createMap();
-            eventData.putBoolean("state", this.state);
+            eventData.putInt("fstate", this.fstate);
+            eventData.putInt("estate", this.estate);
             rctEventEmitter.receiveEvent(getViewTag(), getEventName(), eventData);
         }
     }
 
 
 
+
+
+
+
+
+
+
+
+
     public RealRecyclerView(Context context) {
         super(context);
         con=  context;
+        self = this;
         setLayoutManager(new LinearLayoutManager(getContext()));
         //setSupportsChangeAnimations();
         LayoutManager laymage =  getLayoutManager();
@@ -102,24 +159,40 @@ public class RealRecyclerView extends RecyclerView {
         mEventDispatcher = ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher();
 //        this.addOnScrollListener();
         addOnScrollListener(new OnScrollListener(){
+            int scrollDy = 0;
+            int scrollDx = 0;
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (mShouldScroll && RecyclerView.SCROLL_STATE_IDLE == newState) {
+                    mShouldScroll = false;
+                    smoothMoveToPosition(self, mToPosition);
+                }
+            }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
 
-                mEventDispatcher.dispatchEvent(new MyScrollEvent(getId(), (int)dx,(int)dy));
+                scrollDy += dy;
+                scrollDx += dx;
+                super.onScrolled(recyclerView, dx, dy);
+                mEventDispatcher.dispatchEvent(new MyScrollEvent(getId(), scrollDx,scrollDy,(int)dx,(int)dy));
                 LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                int firstCompletelyVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
-                if(firstCompletelyVisibleItemPosition==0){
-                    //滑动到 顶部
-                    //ScrollToTopAndFooter
-                    mEventDispatcher.dispatchEvent(new ScrollToTopAndFooter(getId(),true));
-                }
-                int lastCompletelyVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition();
-                if(lastCompletelyVisibleItemPosition==layoutManager.getItemCount()-1){
-                    //滑动到 底部
-                    mEventDispatcher.dispatchEvent(new ScrollToTopAndFooter(getId(),false));
-                }
+
+//                mEventDispatcher.dispatchEvent(new ScrollToTopAndFooter(getId(),arr[0],arr[1]));
+//                                                    //layoutManager.findLastCompletelyVisibleItemPosition()
+//                                                    int firstCompletelyVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+//                                                    if(firstCompletelyVisibleItemPosition==0){
+//                                                        //滑动到 顶部
+//                                                        //ScrollToTopAndFooter
+//                                    //                    mEventDispatcher.dispatchEvent(new ScrollToTopAndFooter(getId(),true));
+//                                                    }
+//                                                    int lastCompletelyVisibleItemPosition = layoutManager.findLastCompletelyVisibleItemPosition();
+//                                                    if(lastCompletelyVisibleItemPosition==layoutManager.getItemCount()-1){
+//                                                        //滑动到 底部
+//                                    //                    mEventDispatcher.dispatchEvent(new ScrollToTopAndFooter(getId(),false));
+//                                                    }
 
 
             }

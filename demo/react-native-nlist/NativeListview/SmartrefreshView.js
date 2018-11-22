@@ -24,6 +24,14 @@ const NativeRealRecyclerView = requireNativeComponent('Smartrefresh', RealRecycl
   }
 
 
+
+  scrollToPosition(index){
+
+    this.refs["RecyclerView"].scrollToPosition(index);
+
+  }
+
+
   getInnerViewNode(){
     return this.refs["Refreshtheview"].getInnerViewNode();
   }
@@ -64,6 +72,8 @@ const NativeRealRecyclerView = requireNativeComponent('Smartrefresh', RealRecycl
         <NativeRealRecyclerView
           ref={'Refreshtheview'}
 
+
+          
           
           springback={this.props.springback}
           canRefresh={this.props.canRefresh}  //是否能刷新
@@ -78,6 +88,8 @@ const NativeRealRecyclerView = requireNativeComponent('Smartrefresh', RealRecycl
         
           {/* {this.props.children} */}
           <RecyclerView
+
+ref={'RecyclerView'}
 
             onScrollto={this.props.onScrollto}
             onScroll={this.props.onScroll}

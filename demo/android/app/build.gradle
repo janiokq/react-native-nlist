@@ -115,11 +115,30 @@ android {
             include "armeabi-v7a", "x86"
         }
     }
-    buildTypes {
-        release {
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+
+
+      signingConfigs {
+        SecretSigned {
+            keyAlias 'Demo'
+            keyPassword '123456'
+            storeFile file('./Demo.keystore')
+            storePassword '123456'
         }
+    }
+
+    buildTypes {
+          release {
+                        minifyEnabled enableProguardInReleaseBuilds
+                        proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+                        signingConfig signingConfigs.SecretSigned
+                        aaptOptions.cruncherEnabled = false
+                        aaptOptions.useNewCruncher = false
+
+                    }
+        // release {
+        //     minifyEnabled enableProguardInReleaseBuilds
+        //     proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        // }
     }
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->

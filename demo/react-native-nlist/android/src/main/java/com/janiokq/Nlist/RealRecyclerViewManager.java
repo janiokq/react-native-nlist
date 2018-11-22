@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -23,6 +24,8 @@ import javax.annotation.Nullable;
 
 //Smartrefresh
 public class RealRecyclerViewManager extends ViewGroupManager<RealRecyclerView> {
+    public static final int COMMAND_SET_PAGE = 1;
+
     @Override
     public String getName() {
         return RealRecyclerView.class.getSimpleName();
@@ -71,14 +74,40 @@ public class RealRecyclerViewManager extends ViewGroupManager<RealRecyclerView> 
         parent.removeAllView();
     }
 
+
+    @Override
+    public Map<String,Integer> getCommandsMap() {
+        return MapBuilder.of(
+                "scrollToIndex",
+                COMMAND_SET_PAGE
+               );
+    }
+
+    @Override
+    public void receiveCommand(
+            RealRecyclerView listView,
+            int commandType,
+            @Nullable ReadableArray args) {
+        Assertions.assertNotNull(listView);
+        Assertions.assertNotNull(args);
+        switch (commandType) {
+            case COMMAND_SET_PAGE: {
+                listView.smoothMoveToPosition(listView,args.getInt(0));
+                return;
+            }
+            default:
+                throw new IllegalArgumentException(String.format(
+                        "Unsupported command %d received by %s.",
+                        commandType,
+                        getClass().getSimpleName()));
+        }
+    }
+
+
     @Override
     public
     @Nullable
     Map getExportedCustomDirectEventTypeConstants() {
-
-
-
-
         return MapBuilder.builder()
                 .put("onScroll", MapBuilder.of("registrationName", "onScroll"))
                 .put("onScrollto", MapBuilder.of("registrationName", "onScrollto"))

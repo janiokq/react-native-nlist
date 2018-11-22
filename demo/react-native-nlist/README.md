@@ -83,14 +83,17 @@ end
 
 
 ### onScroll   
- ios is  Height of content
- android is   The last rolling start difference       The negative number is upward.      The positive number is downward. 
 
+{
+  x:x,
+  y:y,
+  nx:nx,
+  ny:ny,
+}
 
-### onScrollto  
-  only  android     o and 1     value 
-   1  Scroll to the head
-   0  Scroll to the bottom
+  android only
+  nx,ny  android is   The last rolling start difference       The negative number is upward.      The positive number is downward. 
+
 
 
 ### reactModuleForCell  	
@@ -126,14 +129,26 @@ end
 ### onRefresh
   Refresh event  
 
-
 ### onLoadmore
   Load event
 
-
 ### dataSource
   data source  Array<Object>      Object  You must have the height attribute.
-	
+
+### reference
+  Access to reference Component methods
+
+## method
+
+### scrollToPosition
+  	```
+          /**
+            * @param index items
+            */
+            scrollToPosition(index: number);
+
+  	```
+
 ## Usage
 
 list Use
@@ -143,25 +158,39 @@ import RNNlist from 'react-native-nlist';
 
 // TODO: What to do with the module?
 RNNlist;
-
  <RNNlist
+
+        reference={(r)=>{
+                  this.RNNlist = r;
+        }}
+
         onScroll={(e)=>{
-          //ios is  Height of content
-          //android is   The last rolling start difference       The negative number is upward.      The positive number is downward. 
-          //direction
-          // console.log(e.nativeEvent.contentOffset)
 
+                  //  e.nativeEvent.contentOffset
+                  // {
+                  //   x:x,
+                  //   y:y,
+                  //   nx:nx,
+                  //   ny:ny,
+                  // }
+
+                  //   android only
+                  //   nx,ny  android is   The last rolling start difference       The negative number is upward.      The positive number is downward. 
 
         }}
-        // only  android
-        onScrollto={(e)=>{
-            // o and 1    
-            // 1  Scroll to the head
-            // 0  Scroll to the bottom
-            //e
-        }}
+
+
+        // only  android    
+        // onScrollto={(e)=>{    abandoned
+        //     // o and 1    
+        //     // 1  Scroll to the head
+        //     // 0  Scroll to the bottom
+        //     //e
+        //     alert(JSON.stringify(e))
+        // }}
+
         inserttheway={0}
-        //ios   Rendering template
+        //ios  Rendering template
         reactModuleForCell="Itemlist"
         //android  Rendering template
         renderItem={Itemlist}
@@ -171,10 +200,12 @@ RNNlist;
         //Android rolling rebound effect
         springback={true}
         //Android template quantity
-        rowHeight={40}
+        // rowHeight={40}
+        
         style={{
-          width:width,
-          height:height
+          flex:1,
+          // width:width,
+          // height:height
         }}
 
         canRefresh={true}
@@ -195,7 +226,6 @@ RNNlist;
           },1000)
         }}
     />
-    
 
 ```
 

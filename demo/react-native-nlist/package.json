@@ -1,7 +1,6 @@
-
 {
   "name": "react-native-nlist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "NativeListview/index",
   "scripts": {

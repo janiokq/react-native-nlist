@@ -10,6 +10,15 @@ export  default class  List   extends Component{
         }
         this.refreshState  = this.props.refreshState;
         this.loadinState  = this.props.loadinState;
+
+        if(this.props.reference){
+            this.props.reference(this);
+        }
+
+    }
+
+    scrollToPosition(index){
+            this.refs.listView.scrollToPosition(index);
     }
 
 static defaultProps = {  

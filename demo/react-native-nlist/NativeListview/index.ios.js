@@ -12,28 +12,30 @@ export  default class  List   extends PureComponent{
         super(props)
         this.refreshState  = this.props.refreshState;
         this.loadinState  = this.props.loadinState;
-            //this.refs.listView.stopRefreshing();
-            // this.refs.listView.startRefreshing
-            // this.refs.listView.startLoadmore
-            // this.refs.listView.stopLoadmore();
+
+          
+            //this.listView.stopRefreshing();
+            // this.listView.startRefreshing
+            // this.listView.startLoadmore
+            // this.listView.stopLoadmore();
     }
     
     componentWillReceiveProps( newprops ){
             this.refreshState = newprops.refreshState;
-            if(this.refs.listView){
+            if(this.listView){
                     if(this.refreshState){
-                        this.refs.listView.startRefreshing();
+                        this.listView.startRefreshing();
                     }else{
-                        this.refs.listView.stopRefreshing();
+                        this.listView.stopRefreshing();
                     }
             }
             
             this.loadinState = newprops.loadinState;
-            if(this.refs.listView){
+            if(this.listView){
                     if(this.loadinState){
-                        this.refs.listView.startLoadmore();
+                        this.listView.startLoadmore();
                     }else{
-                        this.refs.listView.stopLoadmore();
+                        this.listView.stopLoadmore();
                     }
             }
         
@@ -41,14 +43,14 @@ export  default class  List   extends PureComponent{
     }
 
     componentDidMount(){
-        if(this.refs.listView){
+        if(this.listView){
             //自动刷新
             if(this.refreshState){
-                this.refs.listView.startRefreshing();
+                this.listView.startRefreshing();
             }
             //自动加载
             if(this.loadinState){
-                this.refs.listView.startLoadmore()
+                this.listView.startLoadmore()
             }
         }
     }
@@ -58,7 +60,23 @@ export  default class  List   extends PureComponent{
         return (<TableView
                 onScroll={this.props.onScroll}
                 reactModuleForCell={this.props.reactModuleForCell}
-                ref={'listView'}
+                ref={(e)=>{
+
+                    this.listView = e;
+                    if(this.props.reference){
+                        this.props.reference({
+                            scrollToPosition:(index)=>{
+
+                                debugger
+                                this.listView.scrollToIndex({
+                                    'index':index,
+                                    animated:true
+                                });
+                            }
+                        });
+                    }
+                    
+                }}
                 allowsToggle={true}
                 allowsMultipleSelection={true}
                 tableViewStyle={TableView.Consts.Style.Grouped}

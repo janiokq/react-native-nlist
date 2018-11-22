@@ -3,7 +3,8 @@ import ReactNative,{
   requireNativeComponent,
   NativeModules,
   Dimensions,
-  View
+  View,
+  UIManager
 } from 'react-native';
 
 import RealRecyclerItemView from './realRecyclerItemView.android';
@@ -15,6 +16,11 @@ const NativeRealRecyclerView = requireNativeComponent('RealRecyclerView', RealRe
  class  RealRecyclerView extends Component {
    constructor(props){
      super(props)
+
+     if(this.props.reference){
+      this.props.reference(this);
+  }
+
    }
 
   componentWillUnmount (){
@@ -35,6 +41,16 @@ const NativeRealRecyclerView = requireNativeComponent('RealRecyclerView', RealRe
     }
   }
 
+
+  scrollToPosition(index){
+
+    UIManager.dispatchViewManagerCommand(
+      ReactNative.findNodeHandle(this),
+      UIManager.RealRecyclerView.Commands.scrollToIndex,
+      [index],
+    );
+
+  }
 
   render() {
   // const height=Dimensions.get('window').height;
@@ -60,6 +76,8 @@ const NativeRealRecyclerView = requireNativeComponent('RealRecyclerView', RealRe
             e.nativeEvent.contentOffset = {
               x:e.nativeEvent.x,
               y:e.nativeEvent.y,
+              nx:e.nativeEvent.nx,
+              ny:e.nativeEvent.nx,
             }
             if(this.props.onScroll){
               this.props.onScroll(e);
@@ -69,7 +87,7 @@ const NativeRealRecyclerView = requireNativeComponent('RealRecyclerView', RealRe
           onScrollto={(e)=>{
                 
                 if(this.props.onScrollto){
-                   this.props.onScrollto(e.nativeEvent.state)
+                   this.props.onScrollto(e.nativeEvent)
                 }
 
           }}

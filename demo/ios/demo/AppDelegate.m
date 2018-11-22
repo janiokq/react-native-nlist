@@ -17,7 +17,8 @@
   NSURL *jsCodeLocation;
 
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-
+//  jsCodeLocation = [NSURL URLWithString:[NSString stringWithFormat:@"http://10.50.1.105:8081/index.bundle?platform=ios&dev=true"]];
+  
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"demo"
                                                initialProperties:nil

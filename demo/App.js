@@ -53,20 +53,16 @@ export default class App extends Component<Props> {
   adddata(){
     let newlist  = JSON.parse(JSON.stringify(this.state.dataSource) );    // Deep copy
     let nowindex = newlist.length;
-    for(let i =0;i<10000;i++){
+    for(let i =0;i<1000;i++){
       newlist.push({
         height:150,
         index:nowindex+i,
       });
     }
-
-
     this.setState({
       dataSource:newlist,
       loadinState:false,
     })
-
-
   }
 
 
@@ -76,24 +72,63 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
+
+
+        {/* scrollTo(x: number, y: number, animated: boolean): void; */}
+        <View   onTouchEnd={()=>{
+
+                if(this.RNNlist){
+                                    
+                      this.RNNlist.scrollToPosition(14);
+                }
+
+        }}  style={{
+           backgroundColor:'red',
+           height:200,
+           justifyContent:'center',
+           alignContent:'center'
+        }} >
+            <Text  style={{ textAlign:'center' }}  >Scroll to osition:  14 </Text>
+            
+        </View>
+
+<View style={{
+  flex:1,
+  overflow:'hidden',
+}} >
         <RNNlist
+
+        reference={(r)=>{
+                  this.RNNlist = r;
+        }}
+
         onScroll={(e)=>{
-          //ios is  Height of content
-          //android is   The last rolling start difference       The negative number is upward.      The positive number is downward. 
-          //direction
-          // console.log(e.nativeEvent.contentOffset)
 
+                  //  e.nativeEvent.contentOffset
+                  // {
+                  //   x:x,
+                  //   y:y,
+                  //   nx:nx,
+                  //   ny:ny,
+                  // }
+
+                  //   android only
+                  //   nx,ny  android is   The last rolling start difference       The negative number is upward.      The positive number is downward. 
 
         }}
-        // only  android
-        onScrollto={(e)=>{
-            // o and 1    
-            // 1  Scroll to the head
-            // 0  Scroll to the bottom
-            //e
-        }}
+
+
+        // only  android    
+        // onScrollto={(e)=>{    abandoned
+        //     // o and 1    
+        //     // 1  Scroll to the head
+        //     // 0  Scroll to the bottom
+        //     //e
+        //     alert(JSON.stringify(e))
+        // }}
+
         inserttheway={0}
-        //ios   Rendering template
+        //ios  Rendering template
         reactModuleForCell="Itemlist"
         //android  Rendering template
         renderItem={Itemlist}
@@ -106,8 +141,9 @@ export default class App extends Component<Props> {
         // rowHeight={40}
         
         style={{
-          width:width,
-          height:height
+          flex:1,
+          // width:width,
+          // height:height
         }}
 
         canRefresh={true}
@@ -128,7 +164,7 @@ export default class App extends Component<Props> {
           },1000)
         }}
     />
-
+</View>
       </View>
     );
   }
@@ -180,9 +216,6 @@ AppRegistry.registerComponent('Itemlist', () => Itemlist);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
   },
   welcome: {
     fontSize: 20,
